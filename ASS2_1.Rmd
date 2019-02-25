@@ -1,0 +1,505 @@
+---
+title: "Computational Modeling - Week 3 - Assignment 2 - Part 1"
+author: "Riccardo Fusaroli"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(rethinking)
+library(ggplot2)
+```
+
+# In this assignment we learn how to assess rates from a binomial distribution, using the case of assessing your teachers' knowledge of CogSci
+
+#First part
+
+You want to assess your teachers' knowledge of cognitive science. "These guys are a bunch of drama(turgist) queens, mindless philosophers, chattering communication people and Russian spies. Do they really know CogSci?", you think.
+
+To keep things simple (your teachers should not be faced with too complicated things):
+- You created a pool of equally challenging questions on CogSci
+- Each question can be answered correctly or not (we don't allow partially correct answers, to make our life simpler).
+- Knowledge of CogSci can be measured on a scale from 0 (negative knowledge, all answers wrong) through 0.5 (random chance) to 1 (awesome CogSci superpowers)
+
+This is the data:
+- Riccardo: 3 correct answers out of 6 questions
+- Kristian: 2 correct answers out of 2 questions (then he gets bored)
+- Josh: 160 correct answers out of 198 questions (Josh never gets bored)
+- Mikkel: 66 correct answers out of 132 questions
+
+Questions:
+
+### 1. What's Riccardo's estimated knowledge of CogSci? What is the probability he knows more than chance (0.5) [try figuring this out. if you can't, peek into chapters 3.1 and 3.2 and/or the slides]?
+- First implement a grid approximation (hint check paragraph 2.4.1!) with a uniform prior, calculate the posterior and plot the results
+- Then implement a quadratic approximation (hint check paragraph 2.4.2!).
+- N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
+```{r Grid app }
+### Grid app. ###  
+ 
+#define grid
+p_grid <- seq(from= 0, to = 1, length.out = 20)
+
+#define prior
+prior <- rep(1,6)
+
+#compute likelihood at each value in grid
+likelihood <- dbinom(3, size = 6, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior <- likelihood * prior
+
+#standardise the posterior, so it sums to 1
+posterior <- unstd.posterior / sum(unstd.posterior)
+posterior
+
+#display distribution
+plot(p_grid, posterior, type ="b", xlab ="probability of riccardo knowing more than chance", ylab = "posterior probability")
+
+#Display another way
+#samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
+#plot(samples)
+#dens(samples)
+
+# final code
+sum(posterior[p_grid > 0.5])
+```
+
+```{r Quadratic app} 
+# Defining model
+riccardo.qa <- map(
+    alist(
+        w ~ dbinom(6,p) ,  # binomial likelihood
+        p ~ dunif(0,1)     # uniform prior 
+), data=list(w=3) )
+
+# Summary of quadratic approximation
+precis(riccardo.qa)
+```
+
+#Answer: 
+There's 0.5 probability (50 % chance) that Riccardo knows more than chance within the area of Cognitive Science. The density plot shows Riccardo's estimated knowledge of CogSci. Assuming the posterior is Gaussian, the probability is maximized at 0.5, and its standard deviation is 0.2, as indicated by the quadratic approximation.
+
+
+### 2. Estimate all the teachers' knowledge of CogSci. Who's best? Use grid approximation. Comment on the posteriors of Riccardo and Mikkel.
+2a. Produce plots of the prior, and posterior for each teacher.
+```{r redefine p-grid}
+#redefine grid to 200
+p_grid <- seq(from= 0, to = 1, length.out = 200)
+```
+
+```{r Riccardo}
+#define prior
+prior_ric <- rep(1,200)
+plot(prior_ric, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_ric <- dbinom(3, size = 6, prob = p_grid)
+
+#compute product of likelihood and prior 
+unstd.posterior_ric <- likelihood_ric * prior_ric
+
+#standardise the posterior, so it sums to 1
+posterior_ric <- unstd.posterior_ric / sum(unstd.posterior_ric)
+posterior_ric
+
+#display distribution
+plot(p_grid_ric, posterior_ric, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
+
+p_grid[ which.max(posterior_ric) ]
+```
+
+```{r Kristian}
+#define prior
+prior_kris <- rep(1,200)
+plot(prior_kris, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_kris <- dbinom(2, size = 2, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_kris <- likelihood_kris * prior_kris
+
+#standardise the posterior, so it sums to 1
+posterior_kris <- unstd.posterior_kris / sum(unstd.posterior_kris)
+posterior_kris
+
+#display distribution
+plot(p_grid_kris, posterior_kris, type ="l", xlab ="knowledge kristian", ylab = "posterior probability")
+
+sum(posterior_kris[p_grid_kris > 0.5])
+
+p_grid[ which.max(posterior_kris) ]
+```
+
+```{r Josh}
+#define prior
+prior_josh <- rep(1,200)
+plot(prior_josh, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_josh <- dbinom(160, size = 198, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_josh <- likelihood_josh * prior_josh
+
+#standardise the posterior, so it sums to 1
+posterior_josh <- unstd.posterior_josh / sum(unstd.posterior_josh)
+posterior_josh
+
+#display distribution
+plot(p_grid_josh, posterior_josh, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+
+sum(posterior_josh[p_grid_josh > 0.5])
+
+p_grid[ which.max(posterior_josh) ]
+```
+
+```{r Mikkel}
+#define prior
+prior_mik <- rep(1,200)
+plot(prior_mik, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_mik <- dbinom(66, size = 132, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_mik <- likelihood_mik * prior_mik
+ 
+#standardise the posterior, so it sums to 1
+posterior_mik <- unstd.posterior_mik / sum(unstd.posterior_mik)
+posterior_mik
+ 
+#display distribution
+plot(p_grid_mik, posterior_mik, type ="l", xlab ="knowledge mikkel", ylab = "posterior probability")
+
+sum(posterior_mik[p_grid_mik > 0.5])
+
+p_grid[ which.max(posterior_mik) ]
+```
+
+```{r 4fun plot} 
+# One plot for fun 
+plot <- ggplot() +
+  aes(x = p_grid, y = posterior_mik ) +
+  geom_line(aes(col = 'Mikkel'))
+plot
+
+plot <- plot + geom_line(aes(y= posterior_ric), colour="green", legend ="ric")
+plot <- plot + geom_line(aes(y= posterior_kris), colour="orange")
+plot <- plot + geom_line(aes(y= posterior_josh), colour="blue")
+#plot <- plot + geom_line(aes(y= prior_uni), colour="black")
+plot 
+```
+
+#Answer: 
+The plots of each teacher's posterior shows the accuracy of probability of knowing CogSci. Kristian is well off looking at his peak in comparison to the other teachers. 
+Looking at each teacher's posterior distribution, we can observe that Josh's posterior (knowledge of CogSci) reaches the highest point, meaning that he seems to be the most knowledgable. It is clear to observe that the more data (questions asked) the less variance, and therefore the most sure depiction of the knowledge. This can be seen in the curvature of Riccardo and Mikkel's estimated knowledge, who both answered correctly on half of the questions. Mikkel's distribution's tales are smaller than that of Riccardo's, which are driven by the amount of data, meaning that Mikkel's knowledge of CogSci is more likely to be around the probability of 0.5 than Riccardo and Riccardo's knowledge is a lot more difficult to pinpoint the probability of.  
+
+
+
+### 3. Change the prior. Given your teachers all have CogSci jobs, you should start with a higher appreciation of their knowledge: the prior is a normal distribution with a mean of 0.8 and a standard deviation of 0.2. Do the results change (and if so how)?
+3a. Produce plots of the prior and posterior for each teacher.
+```{r ric}
+#Updating prior
+prior_ric2 <- dnorm(p_grid_ric2, mean = 0.8, sd = 0.2)
+plot(prior_ric2, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_ric2 <- dbinom(3, size = 6, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_ric2 <- likelihood_ric2 * prior_ric2
+
+#standardise the posterior, so it sums to 1
+posterior_ric2 <- unstd.posterior_ric2 / sum(unstd.posterior_ric2)
+posterior_ric2
+
+#display distribution
+plot(p_grid_ric2, posterior_ric2, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
+
+# map estimate
+p_grid[ which.max(posterior_ric2) ]
+```
+ 
+```{r kris}
+#Updating prior
+prior_kris2 <- dnorm(p_grid_kris2, mean = 0.8, sd = 0.2)
+plot(prior_kris2, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_kris2 <- dbinom(2, size = 2, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_kris2 <- likelihood_kris2 * prior_kris2
+
+#standardise the posterior, so it sums to 1
+posterior_kris2 <- unstd.posterior_kris2 / sum(unstd.posterior_kris2)
+posterior_kris2
+
+#display distribution
+plot(p_grid_kris2, posterior_kris2, type ="l", xlab ="knowledge kristian", ylab = "posterior probability")
+ 
+sum(posterior_kris2[p_grid_kris2 > 0.5])
+
+# map estimate
+p_grid[ which.max(posterior_kris2) ]
+```
+
+```{r josh} 
+#Updating prior
+prior_josh2 <- dnorm(p_grid_josh2, mean = 0.8, sd = 0.2)
+plot(prior_josh2, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_josh2 <- dbinom(160, size = 198, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_josh2 <- likelihood_josh2 * prior_josh2
+
+#standardise the posterior, so it sums to 1
+posterior_josh2 <- unstd.posterior_josh2 / sum(unstd.posterior_josh2)
+posterior_josh2
+
+#display distribution
+plot(p_grid_josh2, posterior_josh2, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+
+sum(posterior_josh2[p_grid_josh2 > 0.5])
+
+# map estimate
+p_grid[ which.max(posterior_josh2) ]
+```
+
+```{r mik}
+#Updating prior
+prior_mik2 <- dnorm(p_grid_mik2, mean = 0.8, sd = 0.2)
+plot(prior_mik2, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_mik2 <- dbinom(66, size = 132, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_mik2 <- likelihood_mik2 * prior_mik2
+
+#standardise the posterior, so it sums to 1
+posterior_mik2 <- unstd.posterior_mik2 / sum(unstd.posterior_mik2)
+posterior_mik2
+ 
+#display distribution
+plot(p_grid_mik2, posterior_mik2, type ="l", xlab ="knowledge mikkel", ylab = "posterior probability")
+
+sum(posterior_mik2[p_grid_mik2 > 0.5])
+ 
+# map estimate
+p_grid[ which.max(posterior_mik2) ]
+```
+
+```{r gathered plot} 
+# One plot for fun 
+plot <- ggplot() +
+  aes(x = p_grid, y = posterior_mik2 ) +
+  geom_line(aes(col = 'Mikkel'))
+plot
+
+plot <- plot + geom_line(aes(y= posterior_ric2), colour="green", legend ="ric")
+plot <- plot + geom_line(aes(y= posterior_kris2), colour="orange")
+plot <- plot + geom_line(aes(y= posterior_josh2), colour="blue")
+#plot <- plot + geom_line(aes(y= prior_uni), colour="black")
+plot 
+```
+
+# Answer
+Changing the mean and sd have two obvious effects: The teacher's who had few questions are sensitive to the change, whereas the teachers who had more questions are not that affected. The area of uncertainty is depicted by how narrow the plots are, as the change of priors affects Kristian's and Riccardo's curves the most, as they both change slightly. Josh' curve moves to the right, indicating that he's now more likely to be above chance regarding knowledge of CogSci. Kristian's first, and sure, probability is wrecked by the introduction of the sd, which makes his line curve on the far right, making his knowledge of cogsci less sure than before. Josh's and Mikkel's curves are more resistant to change due to their amount of data. 
+Interestingly, Riccardo's kurtosis is increased as well as skewing to the right, proving that the change of mean and sd invites Riccardo to be knowledgable of cogsci. 
+
+
+
+### 4. You go back to your teachers and collect more data (multiply the previous numbers by 100). Calculate their knowledge with both a uniform prior and a normal prior with a mean of 0.8 and a standard deviation of 0.2. Do you still see a difference between the results? Why?
+
+```{r damned priors}
+#uniform prior
+prior_uni <- rep(1,200)
+#Normalised prior
+prior_norm <- dnorm(p_grid, mean = 0.8, sd = 0.2)
+```
+
+```{r ric 100} 
+#compute likelihood at each value in grid
+likelihood_ric4 <- dbinom(300, size = 600, prob = p_grid_ric4)
+
+#compute product of likelihood and prior
+unstd.posterior_ric40 <- likelihood_ric4 * prior_uni
+unstd.posterior_ric41 <- likelihood_ric4 * prior_norm
+
+#standardise the posterior, so it sums to 1
+posterior_ric40 <- unstd.posterior_ric40 / sum(unstd.posterior_ric40)
+posterior_ric41 <- unstd.posterior_ric41 / sum(unstd.posterior_ric41)
+
+#display distribution
+plot(p_grid, posterior_ric40, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
+plot(p_grid, posterior_ric41, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
+
+# map estimate
+p_grid[ which.max(posterior_ric40) ]
+p_grid[ which.max(posterior_ric41) ]
+```
+
+```{r kris 100} 
+#compute likelihood at each value in grid
+likelihood_kris4 <- dbinom(200, size = 200, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_kris40 <- likelihood_kris4 * prior_uni
+unstd.posterior_kris41 <- likelihood_kris4 * prior_norm
+
+#standardise the posterior, so it sums to 1
+posterior_kris40 <- unstd.posterior_kris40 / sum(unstd.posterior_kris40)
+posterior_kris41 <- unstd.posterior_kris41 / sum(unstd.posterior_kris41)
+
+#display distribution
+plot(p_grid, posterior_kris40, type ="l", xlab ="knowledge kris", ylab = "posterior probability")
+plot(p_grid, posterior_kris41, type ="l", xlab ="knowledge kris", ylab = "posterior probability")
+
+# map estimate
+p_grid[ which.max(posterior_kris40) ]
+p_grid[ which.max(posterior_kris41) ]
+```
+
+```{r josh 100}
+#compute likelihood at each value in grid
+likelihood_josh4 <- dbinom(16000, size = 19800, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_josh40 <- likelihood_josh4 * prior_uni
+unstd.posterior_josh41 <- likelihood_josh4 * prior_norm
+
+#standardise the posterior, so it sums to 1
+posterior_josh40 <- unstd.posterior_josh40 / sum(unstd.posterior_josh40)
+posterior_josh41 <- unstd.posterior_josh41 / sum(unstd.posterior_josh41)
+
+#display distribution
+plot(p_grid, posterior_josh40, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+plot(p_grid, posterior_josh41, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+
+# map estimate
+p_grid[ which.max(posterior_josh40) ]
+p_grid[ which.max(posterior_josh41) ]
+```
+
+```{r mik 100}
+#compute likelihood at each value in grid
+likelihood_mik4 <- dbinom(6600, size = 13200, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_mik40 <- likelihood_mik4 * prior_uni
+unstd.posterior_mik41 <- likelihood_mik4 * prior_norm
+
+#standardise the posterior, so it sums to 1
+posterior_mik40 <- unstd.posterior_mik40 / sum(unstd.posterior_mik40)
+posterior_mik41 <- unstd.posterior_mik41 / sum(unstd.posterior_mik41)
+
+#display distribution
+plot(p_grid, posterior_mik40, type ="l", xlab ="knowledge mik", ylab = "posterior probability")
+plot(p_grid, posterior_mik41, type ="l", xlab ="knowledge mik", ylab = "posterior probability")
+
+# map estimate
+p_grid[ which.max(posterior_mik40) ]
+p_grid[ which.max(posterior_mik41) ]
+```
+
+```{r gathered plot}  
+####################### UNIFORM ##########################
+# One plot for fun 
+plotuni <- ggplot() +
+  aes(x = p_grid, y = posterior_mik40 ) +
+  geom_line(aes(col = 'Mikkel'))
+
+plotuni <- plot + geom_line(aes(y= posterior_ric40), colour="green")
+plotuni <- plot + geom_line(aes(y= posterior_kris40), colour="orange")
+plotuni <- plot + geom_line(aes(y= posterior_josh40), colour="blue")
+#plot <- plot + geom_line(aes(y= prior_uni), colour="black")
+ 
+plotuni
+
+####################### NORMAL ##########################
+
+# One plot for fun 
+plotnorm <- ggplot() +
+  aes(x = p_grid, y = posterior_mik41 ) +
+  geom_line(aes(col = 'Mikkel'))
+
+plotnorm <- plot + geom_line(aes(y= posterior_ric41), colour="green", legend ="ric")
+plotnorm <- plot + geom_line(aes(y= posterior_kris41), colour="orange")
+plotnorm <- plot + geom_line(aes(y= posterior_josh41), colour="blue")
+#plot <- plot + geom_line(aes(y= prior_uni), colour="black")
+plotnorm
+```
+
+# Answer
+The difference between the two prior distributions are minimal in our plots of the different posterior distributions accordingly. The more data, the less the prior changes the posterior, which can be seen in that all MAP estimates are exactly the same, as well as the curves, except from Riccardo's results (uniform = 0.497, norm = 0.503) which change slightly. 
+The amount of data thus influences how the prior changes the posterior.
+
+
+### 5. Imagine you're a skeptic and think your teachers do not know anything about CogSci, given the content of their classes. How would you operationalize that belief?
+0.5,0.01
+
+```{r test josh}
+#Updating prior
+prior_josh5 <- dnorm(p_grid, mean = 0.5, sd = 0.025)
+plot(prior_josh5, type = "l")
+
+#compute likelihood at each value in grid
+likelihood_josh5 <- dbinom(160, size = 198, prob = p_grid)
+
+#compute product of likelihood and prior
+unstd.posterior_josh5 <- likelihood_josh5 * prior_josh5
+
+#standardise the posterior, so it sums to 1
+posterior_josh5 <- unstd.posterior_josh5 / sum(unstd.posterior_josh5)
+posterior_josh5
+
+#display distribution
+plot(p_grid, posterior_josh5, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+
+sum(posterior_josh5[p_grid > 0.5])
+
+# map estimate
+p_grid[ which.max(posterior_josh5) ]
+```
+
+# Answer:
+Setting the mean at chance level (0.5), and sd very low (0.025) minimises wriggle room, thus leaving less up to chance. As we know that the questions were binary, chance plays a great role in this investigation, and must thus be accounted for. The process would only include a change in the prior, which leaves the rest the same.
+
+Pseudo-code is: 
+prior_skep<- dnorm(p_grid, mean = 0.5, sd = 0.025)
+
+
+
+
+
+### Optional
+
+6. Optional question: Can you estimate the difference between Riccardo's estimated knowledge and that of each of the other teachers? Would you deem it credible (that is, would you believe that it is actually different)?
+
+7. Bonus knowledge: all the stuff we have done can be implemented in a lme4-like fashion using the brms package. Here is an example.
+```{r}
+library(brms) 
+d <- data.frame(
+  Correct=c(3,2,160,66),
+  Questions=c(6,2,198,132),
+  Teacher=c("RF","KT","JS","MW"))
+
+FlatModel <- brm(Correct|trials(Questions)~1,data=subset(d,Teacher=="RF"),prior=prior("uniform(0,1)", class = "Intercept"),family=binomial)
+plot(FlatModel)
+
+PositiveModel <- brm(Correct|trials(Questions)~1,data=subset(d,Teacher=="RF"),prior=prior("normal(0.8,0.2)", class = "Intercept"),family=binomial)
+plot(PositiveModel)
+
+SkepticalModel <- brm(Correct|trials(Questions)~1,data=subset(d,Teacher=="RF"),prior=prior("normal(0.5,0.01)", class = "Intercept"),family=binomial)
+plot(SkepticalModel)
+```
+
+If you dare, try to tweak the data and model to test two hypotheses:
+- Is Kristian different from Josh?
+- Is Josh different from chance?
+
+
+
