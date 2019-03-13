@@ -32,7 +32,7 @@ Questions:
 - First implement a grid approximation (hint check paragraph 2.4.1!) with a uniform prior, calculate the posterior and plot the results
 - Then implement a quadratic approximation (hint check paragraph 2.4.2!).
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
-```{r Grid app }
+```{r Grid app } 
 ### Grid app. ###  
  
 #define grid
@@ -40,7 +40,7 @@ p_grid <- seq(from= 0, to = 1, length.out = 20)
 
 #define prior
 prior <- rep(1,6)
-
+prior
 #compute likelihood at each value in grid
 likelihood <- dbinom(3, size = 6, prob = p_grid)
 
@@ -52,9 +52,9 @@ posterior <- unstd.posterior / sum(unstd.posterior)
 posterior
 
 #display distribution
-plot(p_grid, posterior, type ="b", xlab ="probability of riccardo knowing more than chance", ylab = "posterior probability")
+plot(p_grid, posterior, type ="b", xlab ="Riccardo: Probability of correct answer", ylab = "Posterior probability")
 
-#Display another way
+>#Display another way
 #samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
 #plot(samples)
 #dens(samples)
@@ -64,7 +64,7 @@ sum(posterior[p_grid > 0.5])
 ```
 
 ```{r Quadratic app} 
-# Defining model
+# Defining model 
 riccardo.qa <- map(
     alist(
         w ~ dbinom(6,p) ,  # binomial likelihood
@@ -78,6 +78,9 @@ precis(riccardo.qa)
 #Answer: 
 There's 0.5 probability (50 % chance) that Riccardo knows more than chance within the area of Cognitive Science. The density plot shows Riccardo's estimated knowledge of CogSci. Assuming the posterior is Gaussian, the probability is maximized at 0.5, and its standard deviation is 0.2, as indicated by the quadratic approximation.
 
+The plot above shows Riccardo's estimated CogSci knowledge based upon his answers to the six questions. There is a 0.5 probability that Riccardo knows more than chance. The quadratic approximation below elaborates Riccardo's estimated knowledge. Assuming the posterior is Gaussian, it is maximized at 0.5, and its standard deviation 0.2.
+
+
 
 ### 2. Estimate all the teachers' knowledge of CogSci. Who's best? Use grid approximation. Comment on the posteriors of Riccardo and Mikkel.
 2a. Produce plots of the prior, and posterior for each teacher.
@@ -87,7 +90,7 @@ p_grid <- seq(from= 0, to = 1, length.out = 200)
 ```
 
 ```{r Riccardo}
-#define prior
+#define prior 
 prior_ric <- rep(1,200)
 plot(prior_ric, type = "l")
 
@@ -177,7 +180,7 @@ p_grid[ which.max(posterior_mik) ]
 ```
 
 ```{r 4fun plot} 
-# One plot for fun 
+# One plot for fun  
 plot <- ggplot() +
   aes(x = p_grid, y = posterior_mik ) +
   geom_line(aes(col = 'Mikkel'))
@@ -194,12 +197,13 @@ plot
 The plots of each teacher's posterior shows the accuracy of probability of knowing CogSci. Kristian is well off looking at his peak in comparison to the other teachers. 
 Looking at each teacher's posterior distribution, we can observe that Josh's posterior (knowledge of CogSci) reaches the highest point, meaning that he seems to be the most knowledgable. It is clear to observe that the more data (questions asked) the less variance, and therefore the most sure depiction of the knowledge. This can be seen in the curvature of Riccardo and Mikkel's estimated knowledge, who both answered correctly on half of the questions. Mikkel's distribution's tales are smaller than that of Riccardo's, which are driven by the amount of data, meaning that Mikkel's knowledge of CogSci is more likely to be around the probability of 0.5 than Riccardo and Riccardo's knowledge is a lot more difficult to pinpoint the probability of.  
 
+The respective posterior plots show the estimated knowledge of the four CogSci teachers. If considering the respective peaks of the posterior, it would appear that Kristian is the most knowledgeable. One should however notice that the maximum height of the curve increases with number of questions, representing the notion that increased evidence results in increased probability. As such, while Kristian may peak at 1.0 it would still be possible for his true knowledge to be much smaller, even below chance. In comparison, the data indicates that Josh's CogSci knowledge is much more certainly well above the 0.5 mark. This can also be gathered as the sums of the probability that the respective teacher performs better than chance. Similar observations can be made when comparing the probabilities of Mikkel and Riccardo. The data indicates that they are both most likely to perform at chance level, but while Mikkel most certainly lies somewhere closely around the 0.5 mark, the probability of Riccardo either disappointing all students or outperforming himself is still relatively big.
 
 
 ### 3. Change the prior. Given your teachers all have CogSci jobs, you should start with a higher appreciation of their knowledge: the prior is a normal distribution with a mean of 0.8 and a standard deviation of 0.2. Do the results change (and if so how)?
 3a. Produce plots of the prior and posterior for each teacher.
 ```{r ric}
-#Updating prior
+#Updating prior 
 prior_ric2 <- dnorm(p_grid_ric2, mean = 0.8, sd = 0.2)
 plot(prior_ric2, type = "l")
 
@@ -245,7 +249,7 @@ p_grid[ which.max(posterior_kris2) ]
 ```
 
 ```{r josh} 
-#Updating prior
+#Updating prior 
 prior_josh2 <- dnorm(p_grid_josh2, mean = 0.8, sd = 0.2)
 plot(prior_josh2, type = "l")
 
@@ -269,7 +273,7 @@ p_grid[ which.max(posterior_josh2) ]
 ```
 
 ```{r mik}
-#Updating prior
+#Updating prior 
 prior_mik2 <- dnorm(p_grid_mik2, mean = 0.8, sd = 0.2)
 plot(prior_mik2, type = "l")
 
@@ -321,7 +325,7 @@ prior_uni <- rep(1,200)
 prior_norm <- dnorm(p_grid, mean = 0.8, sd = 0.2)
 ```
 
-```{r ric 100} 
+```{r ric 100}  
 #compute likelihood at each value in grid
 likelihood_ric4 <- dbinom(300, size = 600, prob = p_grid_ric4)
 
@@ -466,40 +470,12 @@ p_grid[ which.max(posterior_josh5) ]
 ```
 
 # Answer:
-Setting the mean at chance level (0.5), and sd very low (0.025) minimises wriggle room, thus leaving less up to chance. As we know that the questions were binary, chance plays a great role in this investigation, and must thus be accounted for. The process would only include a change in the prior, which leaves the rest the same.
+Setting the mean at chance level (0.5), and sd very low (0.025) minimises wriggle room, thus leaving less up to chance. This way we're as conservative as possible. As we know that the questions were binary, chance plays a great role in this investigation, and must thus be accounted for. The process would only include a change in the prior, which leaves the rest the same.
 
 Pseudo-code is: 
 prior_skep<- dnorm(p_grid, mean = 0.5, sd = 0.025)
 
 
-
-
-
-### Optional
-
-6. Optional question: Can you estimate the difference between Riccardo's estimated knowledge and that of each of the other teachers? Would you deem it credible (that is, would you believe that it is actually different)?
-
-7. Bonus knowledge: all the stuff we have done can be implemented in a lme4-like fashion using the brms package. Here is an example.
-```{r}
-library(brms) 
-d <- data.frame(
-  Correct=c(3,2,160,66),
-  Questions=c(6,2,198,132),
-  Teacher=c("RF","KT","JS","MW"))
-
-FlatModel <- brm(Correct|trials(Questions)~1,data=subset(d,Teacher=="RF"),prior=prior("uniform(0,1)", class = "Intercept"),family=binomial)
-plot(FlatModel)
-
-PositiveModel <- brm(Correct|trials(Questions)~1,data=subset(d,Teacher=="RF"),prior=prior("normal(0.8,0.2)", class = "Intercept"),family=binomial)
-plot(PositiveModel)
-
-SkepticalModel <- brm(Correct|trials(Questions)~1,data=subset(d,Teacher=="RF"),prior=prior("normal(0.5,0.01)", class = "Intercept"),family=binomial)
-plot(SkepticalModel)
-```
-
-If you dare, try to tweak the data and model to test two hypotheses:
-- Is Kristian different from Josh?
-- Is Josh different from chance?
 
 
 
