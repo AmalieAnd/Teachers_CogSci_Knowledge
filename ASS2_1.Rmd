@@ -54,7 +54,7 @@ posterior
 #display distribution
 plot(p_grid, posterior, type ="b", xlab ="Riccardo: Probability of correct answer", ylab = "Posterior probability")
 
->#Display another way
+#Display another way
 #samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
 #plot(samples)
 #dens(samples)
@@ -410,7 +410,7 @@ p_grid[ which.max(posterior_mik41) ]
 ```
 
 ```{r gathered plot}  
-####################### UNIFORM ##########################
+####################### UNIFORM ########################## 
 # One plot for fun 
 plotuni <- ggplot() +
   aes(x = p_grid, y = posterior_mik40 ) +
