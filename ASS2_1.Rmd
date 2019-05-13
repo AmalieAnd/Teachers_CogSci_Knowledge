@@ -32,7 +32,7 @@ Questions:
 - First implement a grid approximation (hint check paragraph 2.4.1!) with a uniform prior, calculate the posterior and plot the results
 - Then implement a quadratic approximation (hint check paragraph 2.4.2!).
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
-```{r Grid app } 
+```{r Grid app }  
 ### Grid app. ###  
  
 #define grid
@@ -52,7 +52,7 @@ posterior <- unstd.posterior / sum(unstd.posterior)
 posterior
 
 #display distribution
-plot(p_grid, posterior, type ="b", xlab ="Riccardo: Probability of correct answer", ylab = "Posterior probability")
+plot(p_grid, posterior, type ="b", xlab ="Riccardo: Proportion of correct answers", ylab = "Density")
 
 #Display another way
 #samples <- sample( p_grid , prob=posterior , size=1e4 , replace=TRUE )
@@ -64,7 +64,7 @@ sum(posterior[p_grid > 0.5])
 ```
 
 ```{r Quadratic app} 
-# Defining model 
+# Defining model  
 riccardo.qa <- map(
     alist(
         w ~ dbinom(6,p) ,  # binomial likelihood
@@ -90,7 +90,7 @@ p_grid <- seq(from= 0, to = 1, length.out = 200)
 ```
 
 ```{r Riccardo}
-#define prior 
+#define prior  
 prior_ric <- rep(1,200)
 plot(prior_ric, type = "l")
 
@@ -105,13 +105,13 @@ posterior_ric <- unstd.posterior_ric / sum(unstd.posterior_ric)
 posterior_ric
 
 #display distribution
-plot(p_grid_ric, posterior_ric, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
+plot(p_grid_ric, posterior_ric, type ="l", xlab ="knowledge riccardo", ylab = "density")
 
 p_grid[ which.max(posterior_ric) ]
 ```
 
 ```{r Kristian}
-#define prior
+#define prior 
 prior_kris <- rep(1,200)
 plot(prior_kris, type = "l")
 
@@ -126,7 +126,7 @@ posterior_kris <- unstd.posterior_kris / sum(unstd.posterior_kris)
 posterior_kris
 
 #display distribution
-plot(p_grid_kris, posterior_kris, type ="l", xlab ="knowledge kristian", ylab = "posterior probability")
+plot(p_grid_kris, posterior_kris, type ="l", xlab ="knowledge kristian", ylab = "density")
 
 sum(posterior_kris[p_grid_kris > 0.5])
 
@@ -149,7 +149,7 @@ posterior_josh <- unstd.posterior_josh / sum(unstd.posterior_josh)
 posterior_josh
 
 #display distribution
-plot(p_grid_josh, posterior_josh, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+plot(p_grid_josh, posterior_josh, type ="l", xlab ="knowledge josh", ylab = "density")
 
 sum(posterior_josh[p_grid_josh > 0.5])
 
@@ -172,7 +172,7 @@ posterior_mik <- unstd.posterior_mik / sum(unstd.posterior_mik)
 posterior_mik
  
 #display distribution
-plot(p_grid_mik, posterior_mik, type ="l", xlab ="knowledge mikkel", ylab = "posterior probability")
+plot(p_grid_mik, posterior_mik, type ="l", xlab ="knowledge mikkel", ylab = "density")
 
 sum(posterior_mik[p_grid_mik > 0.5])
 
@@ -180,7 +180,7 @@ p_grid[ which.max(posterior_mik) ]
 ```
 
 ```{r 4fun plot} 
-# One plot for fun  
+# One plot for fun   
 plot <- ggplot() +
   aes(x = p_grid, y = posterior_mik ) +
   geom_line(aes(col = 'Mikkel'))
@@ -338,8 +338,8 @@ posterior_ric40 <- unstd.posterior_ric40 / sum(unstd.posterior_ric40)
 posterior_ric41 <- unstd.posterior_ric41 / sum(unstd.posterior_ric41)
 
 #display distribution
-plot(p_grid, posterior_ric40, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
-plot(p_grid, posterior_ric41, type ="l", xlab ="knowledge riccardo", ylab = "posterior probability")
+plot(p_grid, posterior_ric40, type ="l", xlab ="knowledge riccardo", ylab = "density")
+plot(p_grid, posterior_ric41, type ="l", xlab ="knowledge riccardo", ylab = "density")
 
 # map estimate
 p_grid[ which.max(posterior_ric40) ]
@@ -359,8 +359,8 @@ posterior_kris40 <- unstd.posterior_kris40 / sum(unstd.posterior_kris40)
 posterior_kris41 <- unstd.posterior_kris41 / sum(unstd.posterior_kris41)
 
 #display distribution
-plot(p_grid, posterior_kris40, type ="l", xlab ="knowledge kris", ylab = "posterior probability")
-plot(p_grid, posterior_kris41, type ="l", xlab ="knowledge kris", ylab = "posterior probability")
+plot(p_grid, posterior_kris40, type ="l", xlab ="knowledge kris", ylab = "density")
+plot(p_grid, posterior_kris41, type ="l", xlab ="knowledge kris", ylab = "density")
 
 # map estimate
 p_grid[ which.max(posterior_kris40) ]
@@ -380,8 +380,8 @@ posterior_josh40 <- unstd.posterior_josh40 / sum(unstd.posterior_josh40)
 posterior_josh41 <- unstd.posterior_josh41 / sum(unstd.posterior_josh41)
 
 #display distribution
-plot(p_grid, posterior_josh40, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
-plot(p_grid, posterior_josh41, type ="l", xlab ="knowledge josh", ylab = "posterior probability")
+plot(p_grid, posterior_josh40, type ="l", xlab ="knowledge josh", ylab = "density")
+plot(p_grid, posterior_josh41, type ="l", xlab ="knowledge josh", ylab = "density")
 
 # map estimate
 p_grid[ which.max(posterior_josh40) ]
@@ -401,15 +401,15 @@ posterior_mik40 <- unstd.posterior_mik40 / sum(unstd.posterior_mik40)
 posterior_mik41 <- unstd.posterior_mik41 / sum(unstd.posterior_mik41)
 
 #display distribution
-plot(p_grid, posterior_mik40, type ="l", xlab ="knowledge mik", ylab = "posterior probability")
-plot(p_grid, posterior_mik41, type ="l", xlab ="knowledge mik", ylab = "posterior probability")
+plot(p_grid, posterior_mik40, type ="l", xlab ="knowledge mik", ylab = "density")
+plot(p_grid, posterior_mik41, type ="l", xlab ="knowledge mik", ylab = "density")
 
 # map estimate
 p_grid[ which.max(posterior_mik40) ]
 p_grid[ which.max(posterior_mik41) ]
 ```
 
-```{r gathered plot}  
+```{r gathered plot}   
 ####################### UNIFORM ########################## 
 # One plot for fun 
 plotuni <- ggplot() +
