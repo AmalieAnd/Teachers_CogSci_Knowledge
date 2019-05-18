@@ -472,9 +472,9 @@ p_grid[ which.max(posterior_josh5) ]
 Setting the mean at chance level (0.5), and sd very low (0.025) minimises wriggle room, thus leaving less up to chance. This way we're as conservative as possible. As we know that the questions were binary, chance plays a great role in this investigation, and must thus be accounted for. The process would only include a change in the prior, which leaves the rest the same.
 
 Pseudo-code is: 
-prior_skep<- dnorm(p_grid, mean = 0.5, sd = 0.025)
+prior_skep <- dnorm(p_grid, mean = 0.5, sd = 0.025)
 
 
 
-
+part 2 --> FINAL COMMIT: ready for hand-in
 
