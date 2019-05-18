@@ -5,8 +5,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-library(rethinking)
-library(ggplot2)
+pacman::p_load("rethinking", "ggplot2")
 ```
 
 # In this assignment we learn how to assess rates from a binomial distribution, using the case of assessing your teachers' knowledge of CogSci
@@ -33,7 +32,7 @@ Questions:
 - Then implement a quadratic approximation (hint check paragraph 2.4.2!).
 - N.B. for the rest of the exercise just keep using the grid approximation (we'll move to quadratic approximations in two classes)
 ```{r Grid app }  
-### Grid app. ###  
+### Grid app. ###   
  
 #define grid
 p_grid <- seq(from= 0, to = 1, length.out = 20)
@@ -89,7 +88,7 @@ The plot above shows Riccardo's estimated CogSci knowledge based upon his answer
 p_grid <- seq(from= 0, to = 1, length.out = 200)
 ```
 
-```{r Riccardo}
+```{r Riccardo} 
 #define prior  
 prior_ric <- rep(1,200)
 plot(prior_ric, type = "l")
